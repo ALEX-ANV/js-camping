@@ -68,11 +68,11 @@ function onError(error) {
  * Get credentials
  */
 
-function getCredentials() {
-  if (process.env.MONGO_USERNAME) {
-    return `${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@`
+function getConnectUrl() {
+  if (process.env.MONGO_URL) {
+    return process.env.MONGO_URL;
   }
-  return '';
+  return 'mongodb://localhost:27017/chatDb';
 }
 
 
@@ -80,7 +80,7 @@ function getCredentials() {
  * Connect to mongo
  */
 
-mongoose.connect(`mongodb://${getCredentials()}localhost:${process.env.MONGO_PORT || '27017'}/chatDb`, { useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
+mongoose.connect(getConnectUrl(), { useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
   if(err) return console.log(err);
 
   /**

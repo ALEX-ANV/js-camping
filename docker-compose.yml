@@ -20,9 +20,7 @@ services:
     depends_on:
       - db
     environment:
-      MONGO_USERNAME: datamola-admin
-      MONGO_PASSWORD: datamola-pass
-      MONGO_PORT: 5432
+      MONGO_URL: mongodb://datamola-admin:datamola-pass@db:5432/chatDb
     restart: unless-stopped
     ports:
       - 3000:3000
