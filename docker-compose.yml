@@ -13,7 +13,7 @@ services:
     volumes:
         - ./data:/db
     ports:
-      - 808:8081
+      - 5432:27017
 
   server:
     container_name: server
