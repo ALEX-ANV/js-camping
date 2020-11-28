@@ -14,8 +14,8 @@ services:
         - ./data:/db
     ports:
       - 5432:27017
-  networks:
-    - app-network
+    networks:
+      - app-network
 
   server:
     container_name: server
