@@ -4,17 +4,14 @@ services:
 
   db:
     image: mongo:4.4
-    restart: always
+    restart: unless-stopped
     container_name: db
     env_file: .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_PASSWORD
-      MONGO_INITDB_DATABASE: $MONGO_DB
     volumes:
         - ./data:/db
-    ports:
-      - 5432:27017
     networks:
       - app-network
 
@@ -27,7 +24,7 @@ services:
       - db
     env_file: .env
     environment:
-      MONGO_URL: "mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@db:5432/chatDb"
+      MONGO_URL: "mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@db:$MONGO_PORT/$MONGO_DB"
     restart: unless-stopped
     ports:
       - 3000:3000
