@@ -30,7 +30,7 @@ services:
       - 3000:3000
     networks:
       - app-network
-    command: ./wait-for.sh db:5432 -- /home/node/app/node_modules/.bin/nodemon bin/www
+    command: ./wait-for.sh db:$MONGO_PORT -- /home/node/app/node_modules/.bin/nodemon bin/www
 
 networks:
   app-network:
