@@ -61,7 +61,7 @@ router.get('/', async (req, res) => {
     const pagination = {skip: +skip, limit: +top, sort: {createdAt: -1}};
 
     try {
-        const messages = await Message.find(params, {_id: 0}, pagination).exec();
+        const messages = await Message.find(params, {_id: 0}, pagination);
 
         res.send(messages);
     } catch (err) {
@@ -84,7 +84,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
-        await Message.findOneAndUpdate({id: req.params.id}, {...req.body}).exec();
+        await Message.updateOne({id: req.params.id}, {...req.body});
         res.sendStatus(200);
     } catch (e) {
         res.status(400).send({error: e.message});
@@ -93,7 +93,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        await Message.findOneAndDelete({id: req.params.id}).exec();
+        await Message.deleteOne({id: req.params.id});
         res.sendStatus(200);
     } catch (e) {
         res.status(400).send({error: e.message});

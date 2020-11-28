@@ -27,9 +27,8 @@ const checkToken = (req, res, next) => {
         if (err) {
             res.sendStatus(401);
         } else if (data.user) {
-            const user = await User.findOne({name: data.user}).exec();
+            const user = await User.findOneAndUpdate({name: data.user}, {isActive: true});
             scheduler.update(user.id);
-            await user.update({isActive: true});
             next();
         }
     });

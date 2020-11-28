@@ -30,21 +30,20 @@ router.post('/login', formData, async (req, res) => {
         res.sendStatus(401);
     }
 
-    const user = await User.findOne({name, pass}).exec();
+    const user = await User.findOne({name, pass});
 
     if (!user) {
         return res.status(400).send({error: 'User not found'});
     }
 
     scheduler.start(user.id, async () => {
-        await user.update({isActive: false})
+        await user.update({isActive: false});
         scheduler.stop(user.id);
     });
 
     const token = jwt.sign({user: name}, SECRET_KEY)
 
     res.cookie('authcookie', token, {maxAge: 900000, httpOnly: true})
-
 
     res.sendStatus(200);
 });
@@ -53,10 +52,10 @@ router.post('/logout', async (req, res) => {
     const {name} = req.body;
 
     try {
-        const user = await User.findOne({name}).exec();
+        const user = await User.findOne({name});
         if (user) {
             scheduler.stop(user.id);
-            await user.save({isActive: false});
+            await user.update({isActive: false});
             return res.clearCookie('authcookie').sendStatus(200);
         }
         res.status(401).send({error: 'User not found'});
