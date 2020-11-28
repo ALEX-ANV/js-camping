@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     environment:
-      MONGO_URL: mongodb://datamola-admin:datamola-pass@db:5432/chatDb
+      MONGO_URL: "mongodb://datamola-admin:datamola-pass@db:5432/chatDb"
     restart: unless-stopped
     ports:
       - 3000:3000

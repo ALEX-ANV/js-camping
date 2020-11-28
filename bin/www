@@ -75,12 +75,19 @@ function getConnectUrl() {
   return 'mongodb://localhost:27017/chatDb';
 }
 
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  reconnectTries: Number.MAX_VALUE,
+  reconnectInterval: 500,
+  connectTimeoutMS: 10000,
+};
 
 /**
  * Connect to mongo
  */
 
-mongoose.connect(getConnectUrl(), { useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
+mongoose.connect(getConnectUrl(), options, (err) => {
   if(err) return console.log(err);
 
   /**
