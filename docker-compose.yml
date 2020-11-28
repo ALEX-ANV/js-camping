@@ -7,6 +7,8 @@ services:
     restart: unless-stopped
     container_name: db
     env_file: .env
+    ports:
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_PASSWORD
@@ -30,7 +32,7 @@ services:
       - 3000:3000
     networks:
       - app-network
-    command: ./wait-for.sh db:$MONGO_PORT -- /home/node/app/node_modules/.bin/nodemon bin/www
+
 
 networks:
   app-network:
