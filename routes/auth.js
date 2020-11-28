@@ -11,8 +11,6 @@ const User = mongoose.model('User', schema);
 router.post('/register', formData, async (req, res) => {
     const {name, pass} = req.body;
 
-    console.log(name, pass)
-
     const user = new User({name, pass});
 
     try {
@@ -31,7 +29,7 @@ router.post('/login', formData, (req, res) => {
         res.sendStatus(401);
     }
 
-    const token = jwt.sign({user: name, pass}, SECRET_KEY)
+    const token = jwt.sign({user: name}, SECRET_KEY)
 
     res.cookie('authcookie', token, {maxAge: 900000, httpOnly: true})
 
