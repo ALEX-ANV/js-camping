@@ -64,12 +64,23 @@ function onError(error) {
   }
 }
 
+/**
+ * Get credentials
+ */
+
+function getCredentials() {
+  if (process.env.MONGO_USERNAME) {
+    return `${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@`
+  }
+  return '';
+}
+
 
 /**
  * Connect to mongo
  */
 
-mongoose.connect("mongodb://localhost:27017/chatDb", { useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
+mongoose.connect(`mongodb://${getCredentials()}localhost:${process.env.MONGO_PORT || '27017'}/chatDb`, { useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
   if(err) return console.log(err);
 
   /**

@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+
+  db:
+    image: mongo:4.4
+    restart: always
+    container_name: db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: datamola-admin
+      MONGO_INITDB_ROOT_PASSWORD: datamola-pass
+    ports:
+      - 5432:8081
+
+  server:
+    container_name: server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      MONGO_USERNAME: datamola-admin
+      MONGO_PASSWORD: datamola-pass
+      MONGO_PORT: 5432
+    restart: unless-stopped
+    ports:
+      - 3000:3000
