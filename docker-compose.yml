@@ -9,15 +9,18 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: datamola-admin
       MONGO_INITDB_ROOT_PASSWORD: datamola-pass
+      MONGO_INITDB_DATABASE: chatDb
+    volumes:
+        - ./data:/db
     ports:
-      - 5432:8081
+      - 808:8081
 
   server:
     container_name: server
     build:
       context: .
       dockerfile: Dockerfile
-    depends_on:
+    links:
       - db
     environment:
       MONGO_URL: "mongodb://datamola-admin:datamola-pass@db:5432/chatDb"
