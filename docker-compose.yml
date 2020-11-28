@@ -6,10 +6,11 @@ services:
     image: mongo:4.4
     restart: always
     container_name: db
+    env_file: .env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: datamola-admin
-      MONGO_INITDB_ROOT_PASSWORD: datamola-pass
-      MONGO_INITDB_DATABASE: chatDb
+      MONGO_INITDB_ROOT_USERNAME: $MONGO_USERNAME
+      MONGO_INITDB_ROOT_PASSWORD: $MONGO_PASSWORD
+      MONGO_INITDB_DATABASE: $MONGO_DB
     volumes:
         - ./data:/db
     ports:
@@ -24,8 +25,9 @@ services:
       dockerfile: Dockerfile
     links:
       - db
+    env_file: .env
     environment:
-      MONGO_URL: "mongodb://datamola-admin:datamola-pass@db:5432/chatDb"
+      MONGO_URL: "mongodb://$MONGO_USERNAME:$MONGO_PASSWORD@db:5432/chatDb"
     restart: unless-stopped
     ports:
       - 3000:3000
