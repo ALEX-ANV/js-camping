@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const schema = require('../schemes/user');
-
+const scheduler = require('../utils/schedule-activity');
 const {SECRET_KEY} = require('../utils/constants');
 
 const User = mongoose.model('User', schema);
@@ -27,7 +27,9 @@ const checkToken = (req, res, next) => {
         if (err) {
             res.sendStatus(401);
         } else if (data.user) {
-            await User.update({name: data.user}, {isActive: true});
+            const user = await User.findOne({name: data.user}).exec();
+            scheduler.update(user.id);
+            await user.update({isActive: true});
             next();
         }
     });
