@@ -49,10 +49,8 @@ router.post('/login', formData, async (req, res) => {
 });
 
 router.post('/logout', async (req, res) => {
-    const {name} = req.body;
-
     try {
-        const user = await User.findOne({name});
+        const user = await User.findOne({name: req.user.name});
         if (user) {
             scheduler.stop(user.id);
             await user.update({isActive: false});

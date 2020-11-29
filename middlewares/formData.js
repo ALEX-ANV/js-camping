@@ -2,21 +2,20 @@ const formidable = require('formidable');
 const form = formidable({ multiples: true });
 
 async function formData(req, res, next) {
-    const data = await new Promise((res, rej) => form.parse(req, (err, fields, files) => {
+    form.parse(req, (err, fields, files) => {
         if (err) {
-            rej(err);
+            res.sendStatus(400);
             return;
         }
-        res({ fields, files });
-    }));
+        const data = { fields, files };
+        req.body = {
+            ...req.body,
+            ...data.fields
+        };
+        req.files = data.files;
 
-    req.body = {
-        ...req.body,
-        ...data.fields
-    };
-    req.files = data.files;
-
-    next();
+        next();
+    });
 }
 
 module.exports = formData;
