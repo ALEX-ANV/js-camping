@@ -3,8 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Test</title>
+    <link href="styles.css" rel="stylesheet"></head>
 </head>
 <body>
+<form id="login-form" onsubmit="controller.login(this[0].value, this[1].value);return false">
+    <input type="text" name="login" id="login">
+    <input type="password" name="pass" id="pass">
+    <button type="submit">Log in</button>
+</form>
+<form id="register-form" onsubmit="controller.register(this[0].value, this[1].value);return false">
+    <input type="text" name="reg-login" id="reg-login">
+    <input type="password" name="reg-pass" id="reg-pass">
+    <button type="submit">Reg</button>
+</form>
+<div id="current-user">Current user: guest</div>
+<div>
+    Filters
+    <input placeholder="text" id="text-filter">
+    <input placeholder="dateFrom" id="dateFrom-filter">
+    <input placeholder="dateTo" id="dateTo-filter">
+    <input placeholder="author" id="author-filter">
+    <button onclick="controller.getMessages()">Apply</button>
+</div>
+
+<div class="main">
+    <ul id="users"></ul>
+    <ul id="messages"></ul>
+</div>
+
+<form id="send-form" onsubmit="controller.doAction(this[0].value, this[1].checked, this[2].value, this[3].value, this[4].value); return false">
+    <input name="text" id="text" placeholder="text">
+    <label for="isPersonal">is Personal</label>
+    <input type="checkbox" name="isPersonal" id="isPersonal">
+    <select id="to" name="to">
+    </select>
+    <select id="action" name="action">
+        <option value="add">Add</option>
+        <option value="edit">Edit</option>
+        <option value="delete">Delete</option>
+    </select>
+    <input name="message-id" id="message-id" placeholder="message-id">
+    <button type="submit">Submit</button>
+</form>
 <script src="script.js"></script>
 </body>
 </html>

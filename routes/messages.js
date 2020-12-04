@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
 const router = express.Router();
 const moment = require('moment');
 const {DATE_FORMAT} = require('../utils/constants');
+const {getToken} = require('../utils/utils');
 
 const schema = require('../schemes/message');
 
@@ -69,24 +69,31 @@ router.get('/', async (req, res) => {
     }
 
 
-    const finalParams = { $or: [{...params, isPersonal: false}]};
-
-    if (req.cookies && req.cookies.authcookie) {
-        const userObj = await jwt.decode(req.cookies.authcookie);
-        req.user = await User.findOne({name: userObj.user});
-    }
-
-    if (req.user) {
-        finalParams.$or.push({...params, isPersonal: true, to: req.user.name});
-
-        if(!author || req.user.name.toLowerCase().includes(author.toLowerCase())) {
-            finalParams.$or.push({...params, isPersonal: true, author: req.user.name});
-        }
-    }
-
-    const pagination = {skip: +skip, limit: +top, sort: {createdAt: -1}};
+    const finalParams = {$or: [{...params, isPersonal: false}]};
 
     try {
+
+        const token = getToken(req);
+
+        if (token) {
+            req.user = await new Promise((res, rej) => User.findByToken(token, (err, user) => {
+                if (err) rej(err);
+                res(user);
+            }));
+        }
+
+        if (req.user) {
+            await req.user.update({lastActivity: Date.now()});
+
+            finalParams.$or.push({...params, isPersonal: true, to: req.user.name});
+
+            if (!author || req.user.name.toLowerCase().includes(author.toLowerCase())) {
+                finalParams.$or.push({...params, isPersonal: true, author: req.user.name});
+            }
+        }
+
+        const pagination = {skip: +skip, limit: +top, sort: {createdAt: -1}};
+
         const messages = await Message.find(finalParams, {_id: 0}, pagination);
 
         res.send(messages);
@@ -111,7 +118,13 @@ router.post('/', async (req, res) => {
             }
         }
 
-        const message = new Message({text, isPersonal, to, author: req.user.name});
+        const message = new Message({
+            text,
+            isPersonal,
+            to: isPersonal ? to : undefined,
+            author: req.user.name,
+            createdAt: Date.now()
+        });
         await message.save();
         res.sendStatus(201);
     } catch (e) {
@@ -120,26 +133,28 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    const {isPersonal, to} = req.body;
+    const {text, isPersonal, to} = req.body;
     if (isPersonal && !to) {
         res.status(400).send({error: '"to" is missing'});
         return;
     }
 
     try {
+        const updObj = {
+            text,
+            isPersonal,
+            to: undefined
+        };
         if (isPersonal) {
             const adressant = await User.find({name: to});
             if (!adressant) {
                 res.status(400).send({error: 'unknown "to"'});
                 return;
             }
+            updObj.to = to;
         }
 
-        if (isPersonal === 'false') {
-            req.body.to = undefined;
-        }
-
-        await Message.updateOne({id: req.params.id, author: req.user.name}, {...req.body});
+        await Message.updateOne({id: req.params.id, author: req.user.name}, updObj);
         res.sendStatus(200);
     } catch (e) {
         res.status(400).send({error: e.message});
